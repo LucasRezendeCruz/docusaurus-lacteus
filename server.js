@@ -5,7 +5,6 @@ const path = require("path");
 
 const app = express();
 
-// Configura Auth0
 app.use(
   auth({
     authRequired: true,
@@ -17,10 +16,14 @@ app.use(
   })
 );
 
-// Serve os arquivos do Docusaurus
-app.use("/", express.static(path.join(__dirname, "build")));
+// Serve arquivos estáticos
+app.use(express.static(path.join(__dirname, "build")));
 
-// Use a porta fornecida pela Render
+// Rota fallback para servir index.html para qualquer rota que não exista
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
