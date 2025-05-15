@@ -8,7 +8,7 @@ const app = express();
 // Configura Auth0
 app.use(
   auth({
-    authRequired: true, // exige login para todas as rotas
+    authRequired: true,
     auth0Logout: true,
     issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
     baseURL: process.env.BASE_URL,
@@ -17,19 +17,11 @@ app.use(
   })
 );
 
-// Serve arquivos estáticos da build do Docusaurus (css, js, imgs, etc)
-app.use(express.static(path.join(__dirname, "build")));
+// Serve os arquivos do Docusaurus
+app.use("/", express.static(path.join(__dirname, "build")));
 
-// Rota para '/' serve o index.html da build
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
-
-// Opcional: rota para perfil do usuário autenticado
-app.get("/profile", (req, res) => {
-  res.send(JSON.stringify(req.oidc.user));
-});
-
-app.listen(3000, () => {
-  console.log("Servidor rodando em http://localhost:3000");
+// Use a porta fornecida pela Render
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
